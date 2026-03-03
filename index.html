@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OC Skill Generator</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: hotpink;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .box {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>OC Skill Generator</h1>
+
+<select id="style">
+    <option value="Aggressive">Aggressive</option>
+    <option value="Strategic">Strategic</option>
+    <option value="Chaotic">Chaotic</option>
+    <option value="Supportive">Supportive</option>
+</select>
+
+<br>
+<button onclick="generate()">Generate</button>
+
+<div class="box" id="output"></div>
+
+<script>
+function generate() {
+    const skills = {
+        Aggressive: ["Berserk Slash", "Shockwave Kick", "Rage Burst"],
+        Strategic: ["Precision Strike", "Tactical Scan", "Drone Assist"],
+        Chaotic: ["Glitch Blink", "Wild Surge", "Chaos Bomb"],
+        Supportive: ["Healing Pulse", "Guardian Shield", "Energy Link"]
+    };
+
+    const style = document.getElementById("style").value;
+    const randomSkill = skills[style][Math.floor(Math.random() * skills[style].length)];
+
+    document.getElementById("output").innerHTML =
+        "⚔ Combat Skill: " + randomSkill;
+}
+</script>
+
+</body>
+</html>
