@@ -5,336 +5,568 @@
 <title>OC Skill Builder</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f0f14;
-  color: white;
+
+body{
+margin:0;
+font-family:Arial;
+background:#0f0f14;
+color:white;
 }
 
-/* ---------- Page Control ---------- */
+.hidden{display:none}
 
-.hidden { display: none; }
+/* INTRO PAGE */
 
-/* ---------- Layout ---------- */
-
-.builderLayout {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+#introPage{
+position:relative;
+height:100vh;
+overflow:hidden;
 }
 
-.container {
-  display: flex;
-  flex: 1;
+#neuralBackground{
+position:absolute;
+width:100%;
+height:100%;
+z-index:0;
 }
 
-.mainArea {
-  flex: 3;
-  padding: 30px;
+#introContent{
+position:relative;
+z-index:1;
+text-align:center;
+top:40%;
 }
 
-.sidePanel {
-  flex: 1;
-  background: #1a1a22;
-  padding: 20px;
-  border-left: 2px solid #333;
+/* BUILDER LAYOUT */
+
+.builderLayout{
+display:flex;
+flex-direction:column;
+height:100vh;
 }
 
-/* ---------- Bottom Skill Bar ---------- */
-
-#bottomSkillBar {
-  background: #14141c;
-  border-top: 2px solid #333;
-  padding: 10px;
-  min-height: 90px;
-  overflow-x: auto;
+.container{
+display:flex;
+flex:1;
 }
 
-#skillBar {
-  display: flex;
-  gap: 10px;
+.mainArea{
+flex:3;
+padding:30px;
 }
 
-.selectedSkill {
-  background: #2a2a35;
-  padding: 6px 10px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 4px;
+.sidePanel{
+flex:1;
+background:#1a1a22;
+padding:20px;
+border-left:2px solid #333;
 }
 
-/* ---------- Buttons ---------- */
+/* SKILLS */
 
-button {
-  padding: 8px 12px;
-  margin: 5px;
-  background: #333;
-  color: white;
-  border: none;
-  cursor: pointer;
+.skill{
+padding:10px;
+margin:6px 0;
+background:#222;
+cursor:pointer;
 }
 
-button:hover {
-  background: #555;
+.skill:hover{
+background:#333;
 }
 
-/* ---------- Skills ---------- */
+/* BUTTONS */
 
-.skill {
-  padding: 10px;
-  margin: 6px 0;
-  background: #222;
-  cursor: pointer;
+button{
+padding:8px 12px;
+margin:5px;
+background:#333;
+color:white;
+border:none;
+cursor:pointer;
 }
 
-.skill:hover {
-  background: #333;
+button:hover{
+background:#555;
 }
 
-/* ---------- Cost Bar ---------- */
+/* BOTTOM LOADOUT */
 
-#costBarContainer {
-  background: #333;
-  height: 15px;
-  width: 100%;
-  margin-top: 10px;
+#bottomSkillBar{
+background:#14141c;
+border-top:2px solid #333;
+padding:10px;
+min-height:90px;
+overflow-x:auto;
 }
 
-#costBar {
-  height: 15px;
-  background: #00ffaa;
-  width: 0%;
+#skillBar{
+display:flex;
+gap:10px;
 }
+
+.selectedSkill{
+background:#2a2a35;
+padding:6px 10px;
+display:flex;
+align-items:center;
+gap:8px;
+border-radius:4px;
+}
+
+/* COST BAR */
+
+#costBarContainer{
+background:#333;
+height:15px;
+width:100%;
+margin-top:10px;
+}
+
+#costBar{
+height:15px;
+background:#00ffaa;
+width:0%;
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- ================= INTRO PAGE ================= -->
+<!-- INTRO PAGE -->
+
 <div id="introPage">
-  <div style="text-align:center; margin-top:20%;">
-    <h1>OC Skill Generator</h1>
-    <button onclick="showPage('elementPage')">Start</button>
-  </div>
+
+<div id="neuralBackground"></div>
+
+<div id="introContent">
+<h1>OC Skill Generator</h1>
+<button onclick="showPage('elementPage')">Start</button>
 </div>
 
-<!-- ================= ELEMENT PAGE ================= -->
+</div>
+
+<!-- ELEMENT PAGE -->
+
 <div id="elementPage" class="hidden">
-  <div style="text-align:center; margin-top:20%;">
-    <h2>Select Your Core Element</h2>
-    <button onclick="chooseElement('fire')">Fire</button>
-    <button onclick="chooseElement('water')">Water</button>
-    <button onclick="chooseElement('wind')">Wind</button>
-    <br><br>
-    <button onclick="showPage('introPage')">Back</button>
-  </div>
+
+<div style="text-align:center;margin-top:20%">
+<h2>Select Your Element</h2>
+
+<button onclick="chooseElement('fire')">Fire</button>
+<button onclick="chooseElement('water')">Water</button>
+<button onclick="chooseElement('wind')">Wind</button>
+
+<br><br>
+
+<button onclick="showPage('introPage')">Back</button>
+
 </div>
 
-<!-- ================= BUILDER PAGE ================= -->
+</div>
+
+<!-- BUILDER PAGE -->
+
 <div id="builderPage" class="hidden">
-  <div class="builderLayout">
 
-    <div class="container">
+<div class="builderLayout">
 
-      <div class="mainArea">
-        <h2 id="elementTitle"></h2>
-        <div id="skillsContainer"></div>
-        <br>
-        <button onclick="showPage('elementPage')">Change Element</button>
-      </div>
+<div class="container">
 
-      <div class="sidePanel">
-        <h3>Skill Details</h3>
-        <div id="skillDetails">Hover over a skill</div>
+<div class="mainArea">
 
-        <hr>
+<h2 id="elementTitle"></h2>
 
-        <h3>Stats</h3>
-        <canvas id="radarChart" width="250" height="250"></canvas>
+<div id="skillsContainer"></div>
 
-        <hr>
+<br>
 
-        <div id="costDisplay">Points: 0 / 10</div>
-        <div id="costBarContainer">
-          <div id="costBar"></div>
-        </div>
-      </div>
+<button onclick="showPage('elementPage')">
+Change Element
+</button>
 
-    </div>
-
-    <div id="bottomSkillBar">
-      <h3>Your Loadout</h3>
-      <div id="skillBar"></div>
-    </div>
-
-  </div>
 </div>
+
+<div class="sidePanel">
+
+<h3>Skill Details</h3>
+
+<div id="skillDetails">
+Hover over a skill
+</div>
+
+<hr>
+
+<h3>Stats</h3>
+
+<canvas id="radarChart" width="250" height="250"></canvas>
+
+<hr>
+
+<div id="costDisplay">
+Points: 0 / 10
+</div>
+
+<div id="costBarContainer">
+<div id="costBar"></div>
+</div>
+
+</div>
+
+</div>
+
+<div id="bottomSkillBar">
+
+<h3>Your Loadout</h3>
+
+<div id="skillBar"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- LIBRARIES -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+
 <script>
-let selectedElement = null;
-let selectedSkills = [];
-let totalCost = 0;
-let maxPoints = 10;
-let radarChart;
 
-/* ---------- DATA ---------- */
+/* BACKGROUND */
 
-const elements = {
-  fire: {
-    skills: [
-      { name: "Fire 1", cost: 2, type: "AoE", stats: {attack:4, defense:1, control:1, sustain:0}},
-      { name: "Fire 2", cost: 3, type: "Burst", stats: {attack:5, defense:0, control:1, sustain:0}},
-      { name: "Fire 3", cost: 4, type: "Explosion", stats: {attack:6, defense:1, control:2, sustain:0}}
-    ]
-  },
-  water: {
-    skills: [
-      { name: "Water 1", cost: 2, type: "Control", stats: {attack:2, defense:1, control:4, sustain:1}},
-      { name: "Water 2", cost: 3, type: "Shield", stats: {attack:1, defense:4, control:2, sustain:2}},
-      { name: "Water 3", cost: 4, type: "Wave", stats: {attack:3, defense:2, control:5, sustain:1}}
-    ]
-  },
-  wind: {
-    skills: [
-      { name: "Wind 1", cost: 2, type: "Mobility", stats: {attack:2, defense:1, control:2, sustain:0}},
-      { name: "Wind 2", cost: 3, type: "Slice", stats: {attack:4, defense:1, control:2, sustain:0}},
-      { name: "Wind 3", cost: 4, type: "Storm", stats: {attack:3, defense:2, control:5, sustain:0}}
-    ]
-  }
-};
+VANTA.NET({
 
-/* ---------- PAGE CONTROL ---------- */
+el:"#neuralBackground",
 
-function showPage(pageId) {
-  document.getElementById("introPage").classList.add("hidden");
-  document.getElementById("elementPage").classList.add("hidden");
-  document.getElementById("builderPage").classList.add("hidden");
-  document.getElementById(pageId).classList.remove("hidden");
+mouseControls:true,
+
+touchControls:true,
+
+gyroControls:false,
+
+minHeight:200,
+
+minWidth:200,
+
+scale:1,
+
+scaleMobile:1,
+
+color:0x00ffaa,
+
+backgroundColor:0x0f0f14,
+
+points:12,
+
+maxDistance:22,
+
+spacing:18
+
+})
+
+
+
+/* STATE */
+
+let selectedElement=null
+
+let selectedSkills=[]
+
+let totalCost=0
+
+let maxPoints=10
+
+let radarChart
+
+
+
+/* DATA */
+
+const elements={
+
+fire:{
+skills:[
+
+{name:"Fire 1",cost:2,type:"AoE",
+stats:{attack:4,defense:1,control:1,sustain:0}},
+
+{name:"Fire 2",cost:3,type:"Burst",
+stats:{attack:5,defense:0,control:1,sustain:0}},
+
+{name:"Fire 3",cost:4,type:"Explosion",
+stats:{attack:6,defense:1,control:2,sustain:0}}
+
+]},
+
+water:{
+skills:[
+
+{name:"Water 1",cost:2,type:"Control",
+stats:{attack:2,defense:1,control:4,sustain:1}},
+
+{name:"Water 2",cost:3,type:"Shield",
+stats:{attack:1,defense:4,control:2,sustain:2}},
+
+{name:"Water 3",cost:4,type:"Wave",
+stats:{attack:3,defense:2,control:5,sustain:1}}
+
+]},
+
+wind:{
+skills:[
+
+{name:"Wind 1",cost:2,type:"Mobility",
+stats:{attack:2,defense:1,control:2,sustain:0}},
+
+{name:"Wind 2",cost:3,type:"Slice",
+stats:{attack:4,defense:1,control:2,sustain:0}},
+
+{name:"Wind 3",cost:4,type:"Storm",
+stats:{attack:3,defense:2,control:5,sustain:0}}
+
+]}
+
 }
 
-/* ---------- ELEMENT SELECTION ---------- */
 
-function chooseElement(element) {
-  selectedElement = element;
-  document.getElementById("elementTitle").innerText =
-    element.toUpperCase() + " Skills";
-  renderSkills();
-  showPage("builderPage");
+
+/* PAGE SWITCH */
+
+function showPage(page){
+
+document.getElementById("introPage").classList.add("hidden")
+document.getElementById("elementPage").classList.add("hidden")
+document.getElementById("builderPage").classList.add("hidden")
+
+document.getElementById(page).classList.remove("hidden")
+
 }
 
-/* ---------- RENDER SKILLS ---------- */
 
-function renderSkills() {
-  const container = document.getElementById("skillsContainer");
-  container.innerHTML = "";
 
-  elements[selectedElement].skills.forEach(skill => {
-    const div = document.createElement("div");
-    div.className = "skill";
-    div.innerText = skill.name + " (Cost: " + skill.cost + ")";
-    div.onclick = () => addSkill(skill);
-    div.onmouseenter = () => showSkillDetails(skill);
-    container.appendChild(div);
-  });
+/* ELEMENT */
+
+function chooseElement(element){
+
+selectedElement=element
+
+document.getElementById("elementTitle").innerText=
+element.toUpperCase()+" Skills"
+
+renderSkills()
+
+showPage("builderPage")
+
 }
 
-/* ---------- ADD / REMOVE SKILLS ---------- */
 
-function addSkill(skill) {
-  if (selectedSkills.includes(skill)) {
-    alert("Skill already selected!");
-    return;
-  }
 
-  if (totalCost + skill.cost > maxPoints) {
-    alert("Not enough points!");
-    return;
-  }
+/* RENDER SKILLS */
 
-  selectedSkills.push(skill);
-  totalCost += skill.cost;
-  updateSkillBar();
-  updateStats();
+function renderSkills(){
+
+const container=document.getElementById("skillsContainer")
+
+container.innerHTML=""
+
+elements[selectedElement].skills.forEach(skill=>{
+
+const div=document.createElement("div")
+
+div.className="skill"
+
+div.innerText=skill.name+" (Cost: "+skill.cost+")"
+
+div.onclick=()=>addSkill(skill)
+
+div.onmouseenter=()=>showSkillDetails(skill)
+
+container.appendChild(div)
+
+})
+
 }
 
-function removeSkill(index) {
-  totalCost -= selectedSkills[index].cost;
-  selectedSkills.splice(index, 1);
-  updateSkillBar();
-  updateStats();
+
+
+/* ADD SKILL */
+
+function addSkill(skill){
+
+if(selectedSkills.includes(skill)){
+
+alert("Skill already selected!")
+
+return
+
 }
 
-/* ---------- UPDATE UI ---------- */
+if(totalCost+skill.cost>maxPoints){
 
-function updateSkillBar() {
-  const bar = document.getElementById("skillBar");
-  bar.innerHTML = "";
+alert("Not enough points!")
 
-  selectedSkills.forEach((skill, index) => {
-    const div = document.createElement("div");
-    div.className = "selectedSkill";
-    div.innerHTML = `
-      ${skill.name}
-      <button onclick="removeSkill(${index})">X</button>
-    `;
-    bar.appendChild(div);
-  });
+return
 
-  document.getElementById("costDisplay").innerText =
-    "Points: " + totalCost + " / " + maxPoints;
-
-  document.getElementById("costBar").style.width =
-    (totalCost / maxPoints * 100) + "%";
 }
 
-function showSkillDetails(skill) {
-  document.getElementById("skillDetails").innerHTML = `
-    <strong>${skill.name}</strong><br>
-    Type: ${skill.type}<br>
-    Cost: ${skill.cost}<br>
-    Attack: ${skill.stats.attack}<br>
-    Defense: ${skill.stats.defense}<br>
-    Control: ${skill.stats.control}<br>
-    Sustain: ${skill.stats.sustain}
-  `;
+selectedSkills.push(skill)
+
+totalCost+=skill.cost
+
+updateSkillBar()
+
+updateStats()
+
 }
 
-function updateStats() {
-  let totals = {attack:0, defense:0, control:0, sustain:0};
 
-  selectedSkills.forEach(skill => {
-    totals.attack += skill.stats.attack;
-    totals.defense += skill.stats.defense;
-    totals.control += skill.stats.control;
-    totals.sustain += skill.stats.sustain;
-  });
 
-  if (radarChart) radarChart.destroy();
+/* REMOVE */
 
-  radarChart = new Chart(document.getElementById("radarChart"), {
-    type: "radar",
-    data: {
-      labels: ["Attack","Defense","Control","Sustain"],
-      datasets: [{
-        label: "Build Stats",
-        data: [totals.attack, totals.defense, totals.control, totals.sustain]
-      }]
-    },
-    options: {
-      scales: {
-        r: {
-          min: 0,
-          max: 15
-        }
-      }
-    }
-  });
+function removeSkill(index){
+
+totalCost-=selectedSkills[index].cost
+
+selectedSkills.splice(index,1)
+
+updateSkillBar()
+
+updateStats()
+
 }
+
+
+
+/* LOADOUT BAR */
+
+function updateSkillBar(){
+
+const bar=document.getElementById("skillBar")
+
+bar.innerHTML=""
+
+selectedSkills.forEach((skill,index)=>{
+
+const div=document.createElement("div")
+
+div.className="selectedSkill"
+
+div.innerHTML=`
+${skill.name}
+<button onclick="removeSkill(${index})">X</button>
+`
+
+bar.appendChild(div)
+
+})
+
+document.getElementById("costDisplay").innerText=
+"Points: "+totalCost+" / "+maxPoints
+
+document.getElementById("costBar").style.width=
+(totalCost/maxPoints*100)+"%"
+
+}
+
+
+
+/* SKILL DETAILS */
+
+function showSkillDetails(skill){
+
+document.getElementById("skillDetails").innerHTML=`
+
+<strong>${skill.name}</strong><br>
+
+Type: ${skill.type}<br>
+
+Cost: ${skill.cost}<br>
+
+Attack: ${skill.stats.attack}<br>
+
+Defense: ${skill.stats.defense}<br>
+
+Control: ${skill.stats.control}<br>
+
+Sustain: ${skill.stats.sustain}
+
+`
+
+}
+
+
+
+/* CHART */
+
+function updateStats(){
+
+let totals={
+attack:0,
+defense:0,
+control:0,
+sustain:0
+}
+
+selectedSkills.forEach(skill=>{
+
+totals.attack+=skill.stats.attack
+totals.defense+=skill.stats.defense
+totals.control+=skill.stats.control
+totals.sustain+=skill.stats.sustain
+
+})
+
+if(radarChart) radarChart.destroy()
+
+radarChart=new Chart(
+
+document.getElementById("radarChart"),
+
+{
+type:"radar",
+
+data:{
+labels:["Attack","Defense","Control","Sustain"],
+
+datasets:[{
+
+label:"Build Stats",
+
+data:[
+totals.attack,
+totals.defense,
+totals.control,
+totals.sustain
+]
+
+}]
+},
+
+options:{
+scales:{
+r:{
+min:0,
+max:15
+}
+}
+}
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
 </script>
 
 </body>
