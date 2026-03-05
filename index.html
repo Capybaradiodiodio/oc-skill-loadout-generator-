@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Elemental Skill Builder</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    background: #111;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+}
+
+select, button {
+    padding: 6px;
+    margin: 6px;
+}
+
+#skills {
+    margin-top: 20px;
+}
+
+.skill-box {
+    border: 1px solid white;
+    padding: 10px;
+    margin: 10px;
+    display: inline-block;
+    width: 200px;
+}
+
+#points {
+    font-size: 20px;
+    margin-top: 15px;
+}
+
+#properties {
+    margin-top: 20px;
+    border: 1px solid white;
+    padding: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Elemental Skill Builder</h1>
+
+<div id="points">Skill Points: 0 / 10</div>
+
+<div id="skills"></div>
+
+<div id="properties">Select a skill to see properties.</div>
+
+<canvas id="radarChart" width="400" height="400"></canvas>
+
+<script>
+
+// ---------- CONFIG ----------
+const TOTAL_POINTS = 10;
+
+// ---------- SKILL DATABASE ----------
+const skills = [
+
+{ name: "Fire 1", element: "Fire", role: "Attack", cost: 2,
+  stats: { damage: 8, control: 2, defense: 1, mobility: 2, sustain: 0 } },
+
+{ name: "Fire 2", element: "Fire", role: "Defense", cost: 2,
+  stats: { damage: 1, control: 2, defense: 8, mobility: 1, sustain: 3 } },
+
+{ name: "Fire 3", element: "Fire", role: "Dodge", cost: 2,
+  stats: { damage: 2, control: 1, defense: 1, mobility: 8, sustain: 0 } },
+
+{ name: "Water 1", element: "Water", role: "Attack", cost: 2,
+  stats: { damage: 5, control: 7, defense: 2, mobility: 2, sustain: 0 } },
+
+{ name: "Water 2", element: "Water", role: "Heal", cost: 2,
+  stats: { damage: 0, control: 3, defense: 2, mobility: 1, sustain: 8 } },
+
+{ name: "Water 3", element: "Water", role: "Defense", cost: 2,
+  stats: { damage: 1, control: 4, defense: 7, mobility: 1, sustain: 3 } },
+
+{ name: "Wind 1", element: "Wind", role: "Attack", cost: 2,
+  stats: { damage: 6, control: 2, defense: 1, mobility: 6, sustain: 0 } },
+
+{ name: "Wind 2", element: "Wind", role: "Utility", cost: 2,
+  stats: { damage: 2, control: 6, defense: 1, mobility: 5, sustain: 1 } },
+
+{ name: "Wind 3", element: "Wind", role: "Dodge", cost: 2,
+  stats: { damage: 1, control: 2, defense: 1, mobility: 9, sustain: 0 } }
+
+];
+
+// ---------- STATE ----------
+let selectedSkills = [];
+let usedElements = [];
+
+// ---------- CREATE SKILL BUTTONS ----------
+const skillContainer = document.getElementById("skills");
+
+skills.forEach(skill => {
+    const div = document.createElement("div");
+    div.className = "skill-box";
+    div.innerHTML = `
+        <strong>${skill.name}</strong><br>
+        ${skill.element} - ${skill.role}<br>
+        <button onclick="addSkill('${skill.name}')">Add</button>
+    `;
+    skillContainer.appendChild(div);
+});
+
+// ---------- ADD SKILL ----------
+function addSkill(name) {
+
+    const skill = skills.find(s => s.name === name);
+
+    let extraCost = 0;
+
+    if (!usedElements.includes(skill.element) && usedElements.length > 0) {
+        extraCost = 1; // cross element penalty
+    }
+
+    const finalCost = skill.cost + extraCost;
+
+    const currentPoints = getCurrentPoints();
+
+    if (currentPoints + finalCost > TOTAL_POINTS) {
+        alert("Not enough skill points!");
+        return;
+    }
+
+    selectedSkills.push({ ...skill, finalCost });
+
+    if (!usedElements.includes(skill.element)) {
+        usedElements.push(skill.element);
+    }
+
+    updatePoints();
+    updateChart();
+}
+
+// ---------- POINT COUNTER ----------
+function getCurrentPoints() {
+    return selectedSkills.reduce((sum, s) => sum + s.finalCost, 0);
+}
+
+function updatePoints() {
+    document.getElementById("points").innerText =
+        "Skill Points: " + getCurrentPoints() + " / " + TOTAL_POINTS;
+}
+
+// ---------- PROPERTIES DISPLAY ----------
+skillContainer.addEventListener("click", function(e) {
+    if (e.target.tagName === "BUTTON") {
+        const skillName = e.target.parentElement.querySelector("strong").innerText;
+        const skill = skills.find(s => s.name === skillName);
+
+        document.getElementById("properties").innerHTML = `
+            <strong>${skill.name}</strong><br>
+            Element: ${skill.element}<br>
+            Role: ${skill.role}<br>
+            Damage: ${skill.stats.damage}<br>
+            Control: ${skill.stats.control}<br>
+            Defense: ${skill.stats.defense}<br>
+            Mobility: ${skill.stats.mobility}<br>
+            Sustain: ${skill.stats.sustain}
+        `;
+    }
+});
+
+// ---------- RADAR CHART ----------
+const ctx = document.getElementById('radarChart').getContext('2d');
+
+const radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+        labels: ['Damage', 'Control', 'Defense', 'Mobility', 'Sustain'],
+        datasets: [{
+            label: 'Current Build',
+            data: [0,0,0,0,0],
+            borderColor: 'hotpink',
+            backgroundColor: 'rgba(255,105,180,0.2)'
+        }]
+    },
+    options: {
+        scales: {
+            r: {
+                beginAtZero: true,
+                max: 20
+            }
+        }
+    }
+});
+
+// ---------- UPDATE CHART ----------
+function updateChart() {
+
+    const totals = {
+        damage: 0,
+        control: 0,
+        defense: 0,
+        mobility: 0,
+        sustain: 0
+    };
+
+    selectedSkills.forEach(skill => {
+        for (let stat in totals) {
+            totals[stat] += skill.stats[stat];
+        }
+    });
+
+    radarChart.data.datasets[0].data = [
+        totals.damage,
+        totals.control,
+        totals.defense,
+        totals.mobility,
+        totals.sustain
+    ];
+
+    radarChart.update();
+}
+
+</script>
+
+</body>
+</html>
