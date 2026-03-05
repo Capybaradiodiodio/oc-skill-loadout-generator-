@@ -9,35 +9,87 @@ body {
     background: #111;
     color: white;
     font-family: Arial;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
     text-align: center;
 }
 
-select, button {
-    padding: 6px;
-    margin: 6px;
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
 }
 
-#skills {
-    margin-top: 20px;
+/* LEFT SIDE */
+.left-panel {
+    width: 60%;
 }
 
+/* RIGHT SIDE */
+.right-panel {
+    width: 35%;
+}
+
+/* Skill Library */
 .skill-box {
+    border: 1px solid #444;
+    padding: 8px;
+    margin: 6px;
+    display: inline-block;
+    width: 160px;
+    background: #1a1a1a;
+}
+
+button {
+    padding: 4px 8px;
+    margin-top: 4px;
+    cursor: pointer;
+}
+
+/* Selected Skills Bar */
+#selectedBar {
     border: 1px solid white;
     padding: 10px;
-    margin: 10px;
-    display: inline-block;
-    width: 200px;
+    margin-bottom: 15px;
+    min-height: 60px;
 }
 
-#points {
-    font-size: 20px;
-    margin-top: 15px;
+.selected-skill {
+    background: #222;
+    padding: 6px;
+    margin: 4px;
+    display: inline-block;
+    border: 1px solid hotpink;
+}
+
+/* Cost Bar */
+#costContainer {
+    height: 20px;
+    background: #333;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+#costBar {
+    height: 100%;
+    width: 0%;
+    background: hotpink;
+    transition: 0.3s;
+}
+
+/* Chart sizing */
+#radarChart {
+    max-width: 300px;
+    max-height: 300px;
 }
 
 #properties {
-    margin-top: 20px;
-    border: 1px solid white;
-    padding: 15px;
+    margin-top: 10px;
+    border: 1px solid #444;
+    padding: 10px;
 }
 </style>
 </head>
@@ -46,30 +98,43 @@ select, button {
 
 <h1>Elemental Skill Builder</h1>
 
-<div id="points">Skill Points: 0 / 10</div>
+<div class="container">
 
+<div class="left-panel">
+
+<h3>Selected Skills</h3>
+<div id="costContainer">
+    <div id="costBar"></div>
+</div>
+<div id="points">0 / 10</div>
+
+<div id="selectedBar"></div>
+
+<h3>Skill Library</h3>
 <div id="skills"></div>
 
-<div id="properties">Select a skill to see properties.</div>
+</div>
 
-<canvas id="radarChart" width="400" height="400"></canvas>
+<div class="right-panel">
+
+<canvas id="radarChart"></canvas>
+<div id="properties">Click a skill to see properties.</div>
+
+</div>
+
+</div>
 
 <script>
 
-// ---------- CONFIG ----------
+// CONFIG
 const TOTAL_POINTS = 10;
 
-// ---------- SKILL DATABASE ----------
 const skills = [
-
 { name: "Fire 1", element: "Fire", role: "Attack", cost: 2,
   stats: { damage: 8, control: 2, defense: 1, mobility: 2, sustain: 0 } },
 
 { name: "Fire 2", element: "Fire", role: "Defense", cost: 2,
   stats: { damage: 1, control: 2, defense: 8, mobility: 1, sustain: 3 } },
-
-{ name: "Fire 3", element: "Fire", role: "Dodge", cost: 2,
-  stats: { damage: 2, control: 1, defense: 1, mobility: 8, sustain: 0 } },
 
 { name: "Water 1", element: "Water", role: "Attack", cost: 2,
   stats: { damage: 5, control: 7, defense: 2, mobility: 2, sustain: 0 } },
@@ -77,25 +142,17 @@ const skills = [
 { name: "Water 2", element: "Water", role: "Heal", cost: 2,
   stats: { damage: 0, control: 3, defense: 2, mobility: 1, sustain: 8 } },
 
-{ name: "Water 3", element: "Water", role: "Defense", cost: 2,
-  stats: { damage: 1, control: 4, defense: 7, mobility: 1, sustain: 3 } },
-
 { name: "Wind 1", element: "Wind", role: "Attack", cost: 2,
   stats: { damage: 6, control: 2, defense: 1, mobility: 6, sustain: 0 } },
 
-{ name: "Wind 2", element: "Wind", role: "Utility", cost: 2,
-  stats: { damage: 2, control: 6, defense: 1, mobility: 5, sustain: 1 } },
-
-{ name: "Wind 3", element: "Wind", role: "Dodge", cost: 2,
+{ name: "Wind 2", element: "Wind", role: "Dodge", cost: 2,
   stats: { damage: 1, control: 2, defense: 1, mobility: 9, sustain: 0 } }
-
 ];
 
-// ---------- STATE ----------
 let selectedSkills = [];
 let usedElements = [];
 
-// ---------- CREATE SKILL BUTTONS ----------
+// Create Skill Library
 const skillContainer = document.getElementById("skills");
 
 skills.forEach(skill => {
@@ -109,23 +166,19 @@ skills.forEach(skill => {
     skillContainer.appendChild(div);
 });
 
-// ---------- ADD SKILL ----------
 function addSkill(name) {
 
     const skill = skills.find(s => s.name === name);
 
     let extraCost = 0;
-
     if (!usedElements.includes(skill.element) && usedElements.length > 0) {
-        extraCost = 1; // cross element penalty
+        extraCost = 1;
     }
 
     const finalCost = skill.cost + extraCost;
 
-    const currentPoints = getCurrentPoints();
-
-    if (currentPoints + finalCost > TOTAL_POINTS) {
-        alert("Not enough skill points!");
+    if (getCurrentPoints() + finalCost > TOTAL_POINTS) {
+        alert("Not enough points!");
         return;
     }
 
@@ -135,21 +188,54 @@ function addSkill(name) {
         usedElements.push(skill.element);
     }
 
-    updatePoints();
-    updateChart();
+    updateUI();
 }
 
-// ---------- POINT COUNTER ----------
+function removeSkill(index) {
+    selectedSkills.splice(index, 1);
+
+    usedElements = [...new Set(selectedSkills.map(s => s.element))];
+
+    updateUI();
+}
+
 function getCurrentPoints() {
     return selectedSkills.reduce((sum, s) => sum + s.finalCost, 0);
 }
 
-function updatePoints() {
-    document.getElementById("points").innerText =
-        "Skill Points: " + getCurrentPoints() + " / " + TOTAL_POINTS;
+function updateUI() {
+    updateSelectedBar();
+    updatePoints();
+    updateChart();
 }
 
-// ---------- PROPERTIES DISPLAY ----------
+function updateSelectedBar() {
+
+    const bar = document.getElementById("selectedBar");
+    bar.innerHTML = "";
+
+    selectedSkills.forEach((skill, index) => {
+        const div = document.createElement("div");
+        div.className = "selected-skill";
+        div.innerHTML = `
+            ${skill.name} (${skill.finalCost})
+            <button onclick="removeSkill(${index})">X</button>
+        `;
+        bar.appendChild(div);
+    });
+}
+
+function updatePoints() {
+
+    const current = getCurrentPoints();
+
+    document.getElementById("points").innerText =
+        current + " / " + TOTAL_POINTS;
+
+    const percent = (current / TOTAL_POINTS) * 100;
+    document.getElementById("costBar").style.width = percent + "%";
+}
+
 skillContainer.addEventListener("click", function(e) {
     if (e.target.tagName === "BUTTON") {
         const skillName = e.target.parentElement.querySelector("strong").innerText;
@@ -168,7 +254,7 @@ skillContainer.addEventListener("click", function(e) {
     }
 });
 
-// ---------- RADAR CHART ----------
+// Radar Chart
 const ctx = document.getElementById('radarChart').getContext('2d');
 
 const radarChart = new Chart(ctx, {
@@ -176,32 +262,27 @@ const radarChart = new Chart(ctx, {
     data: {
         labels: ['Damage', 'Control', 'Defense', 'Mobility', 'Sustain'],
         datasets: [{
-            label: 'Current Build',
+            label: 'Build',
             data: [0,0,0,0,0],
             borderColor: 'hotpink',
             backgroundColor: 'rgba(255,105,180,0.2)'
         }]
     },
     options: {
+        plugins: { legend: { display: false }},
         scales: {
             r: {
                 beginAtZero: true,
-                max: 20
+                max: 25,
+                ticks: { display: false }
             }
         }
     }
 });
 
-// ---------- UPDATE CHART ----------
 function updateChart() {
 
-    const totals = {
-        damage: 0,
-        control: 0,
-        defense: 0,
-        mobility: 0,
-        sustain: 0
-    };
+    const totals = { damage:0, control:0, defense:0, mobility:0, sustain:0 };
 
     selectedSkills.forEach(skill => {
         for (let stat in totals) {
