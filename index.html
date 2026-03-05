@@ -1,306 +1,340 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Elemental Skill Builder</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<title>OC Skill Builder</title>
 
 <style>
 body {
-    background: #111;
-    color: white;
-    font-family: Arial;
-    margin: 0;
-    padding: 20px;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f14;
+  color: white;
 }
 
-h1 {
-    text-align: center;
+/* ---------- Page Control ---------- */
+
+.hidden { display: none; }
+
+/* ---------- Layout ---------- */
+
+.builderLayout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+  display: flex;
+  flex: 1;
 }
 
-/* LEFT SIDE */
-.left-panel {
-    width: 60%;
+.mainArea {
+  flex: 3;
+  padding: 30px;
 }
 
-/* RIGHT SIDE */
-.right-panel {
-    width: 35%;
+.sidePanel {
+  flex: 1;
+  background: #1a1a22;
+  padding: 20px;
+  border-left: 2px solid #333;
 }
 
-/* Skill Library */
-.skill-box {
-    border: 1px solid #444;
-    padding: 8px;
-    margin: 6px;
-    display: inline-block;
-    width: 160px;
-    background: #1a1a1a;
+/* ---------- Bottom Skill Bar ---------- */
+
+#bottomSkillBar {
+  background: #14141c;
+  border-top: 2px solid #333;
+  padding: 10px;
+  min-height: 90px;
+  overflow-x: auto;
 }
+
+#skillBar {
+  display: flex;
+  gap: 10px;
+}
+
+.selectedSkill {
+  background: #2a2a35;
+  padding: 6px 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+}
+
+/* ---------- Buttons ---------- */
 
 button {
-    padding: 4px 8px;
-    margin-top: 4px;
-    cursor: pointer;
+  padding: 8px 12px;
+  margin: 5px;
+  background: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
-/* Selected Skills Bar */
-#selectedBar {
-    border: 1px solid white;
-    padding: 10px;
-    margin-bottom: 15px;
-    min-height: 60px;
+button:hover {
+  background: #555;
 }
 
-.selected-skill {
-    background: #222;
-    padding: 6px;
-    margin: 4px;
-    display: inline-block;
-    border: 1px solid hotpink;
+/* ---------- Skills ---------- */
+
+.skill {
+  padding: 10px;
+  margin: 6px 0;
+  background: #222;
+  cursor: pointer;
 }
 
-/* Cost Bar */
-#costContainer {
-    height: 20px;
-    background: #333;
-    margin-bottom: 10px;
-    position: relative;
+.skill:hover {
+  background: #333;
+}
+
+/* ---------- Cost Bar ---------- */
+
+#costBarContainer {
+  background: #333;
+  height: 15px;
+  width: 100%;
+  margin-top: 10px;
 }
 
 #costBar {
-    height: 100%;
-    width: 0%;
-    background: hotpink;
-    transition: 0.3s;
-}
-
-/* Chart sizing */
-#radarChart {
-    max-width: 300px;
-    max-height: 300px;
-}
-
-#properties {
-    margin-top: 10px;
-    border: 1px solid #444;
-    padding: 10px;
+  height: 15px;
+  background: #00ffaa;
+  width: 0%;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Elemental Skill Builder</h1>
-
-<div class="container">
-
-<div class="left-panel">
-
-<h3>Selected Skills</h3>
-<div id="costContainer">
-    <div id="costBar"></div>
-</div>
-<div id="points">0 / 10</div>
-
-<div id="selectedBar"></div>
-
-<h3>Skill Library</h3>
-<div id="skills"></div>
-
+<!-- ================= INTRO PAGE ================= -->
+<div id="introPage">
+  <div style="text-align:center; margin-top:20%;">
+    <h1>OC Skill Generator</h1>
+    <button onclick="showPage('elementPage')">Start</button>
+  </div>
 </div>
 
-<div class="right-panel">
-
-<canvas id="radarChart"></canvas>
-<div id="properties">Click a skill to see properties.</div>
-
+<!-- ================= ELEMENT PAGE ================= -->
+<div id="elementPage" class="hidden">
+  <div style="text-align:center; margin-top:20%;">
+    <h2>Select Your Core Element</h2>
+    <button onclick="chooseElement('fire')">Fire</button>
+    <button onclick="chooseElement('water')">Water</button>
+    <button onclick="chooseElement('wind')">Wind</button>
+    <br><br>
+    <button onclick="showPage('introPage')">Back</button>
+  </div>
 </div>
 
+<!-- ================= BUILDER PAGE ================= -->
+<div id="builderPage" class="hidden">
+  <div class="builderLayout">
+
+    <div class="container">
+
+      <div class="mainArea">
+        <h2 id="elementTitle"></h2>
+        <div id="skillsContainer"></div>
+        <br>
+        <button onclick="showPage('elementPage')">Change Element</button>
+      </div>
+
+      <div class="sidePanel">
+        <h3>Skill Details</h3>
+        <div id="skillDetails">Hover over a skill</div>
+
+        <hr>
+
+        <h3>Stats</h3>
+        <canvas id="radarChart" width="250" height="250"></canvas>
+
+        <hr>
+
+        <div id="costDisplay">Points: 0 / 10</div>
+        <div id="costBarContainer">
+          <div id="costBar"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="bottomSkillBar">
+      <h3>Your Loadout</h3>
+      <div id="skillBar"></div>
+    </div>
+
+  </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-
-// CONFIG
-const TOTAL_POINTS = 10;
-
-const skills = [
-{ name: "Fire 1", element: "Fire", role: "Attack", cost: 2,
-  stats: { damage: 8, control: 2, defense: 1, mobility: 2, sustain: 0 } },
-
-{ name: "Fire 2", element: "Fire", role: "Defense", cost: 2,
-  stats: { damage: 1, control: 2, defense: 8, mobility: 1, sustain: 3 } },
-
-{ name: "Water 1", element: "Water", role: "Attack", cost: 2,
-  stats: { damage: 5, control: 7, defense: 2, mobility: 2, sustain: 0 } },
-
-{ name: "Water 2", element: "Water", role: "Heal", cost: 2,
-  stats: { damage: 0, control: 3, defense: 2, mobility: 1, sustain: 8 } },
-
-{ name: "Wind 1", element: "Wind", role: "Attack", cost: 2,
-  stats: { damage: 6, control: 2, defense: 1, mobility: 6, sustain: 0 } },
-
-{ name: "Wind 2", element: "Wind", role: "Dodge", cost: 2,
-  stats: { damage: 1, control: 2, defense: 1, mobility: 9, sustain: 0 } }
-];
-
+let selectedElement = null;
 let selectedSkills = [];
-let usedElements = [];
+let totalCost = 0;
+let maxPoints = 10;
+let radarChart;
 
-// Create Skill Library
-const skillContainer = document.getElementById("skills");
+/* ---------- DATA ---------- */
 
-skills.forEach(skill => {
+const elements = {
+  fire: {
+    skills: [
+      { name: "Fire 1", cost: 2, type: "AoE", stats: {attack:4, defense:1, control:1, sustain:0}},
+      { name: "Fire 2", cost: 3, type: "Burst", stats: {attack:5, defense:0, control:1, sustain:0}},
+      { name: "Fire 3", cost: 4, type: "Explosion", stats: {attack:6, defense:1, control:2, sustain:0}}
+    ]
+  },
+  water: {
+    skills: [
+      { name: "Water 1", cost: 2, type: "Control", stats: {attack:2, defense:1, control:4, sustain:1}},
+      { name: "Water 2", cost: 3, type: "Shield", stats: {attack:1, defense:4, control:2, sustain:2}},
+      { name: "Water 3", cost: 4, type: "Wave", stats: {attack:3, defense:2, control:5, sustain:1}}
+    ]
+  },
+  wind: {
+    skills: [
+      { name: "Wind 1", cost: 2, type: "Mobility", stats: {attack:2, defense:1, control:2, sustain:0}},
+      { name: "Wind 2", cost: 3, type: "Slice", stats: {attack:4, defense:1, control:2, sustain:0}},
+      { name: "Wind 3", cost: 4, type: "Storm", stats: {attack:3, defense:2, control:5, sustain:0}}
+    ]
+  }
+};
+
+/* ---------- PAGE CONTROL ---------- */
+
+function showPage(pageId) {
+  document.getElementById("introPage").classList.add("hidden");
+  document.getElementById("elementPage").classList.add("hidden");
+  document.getElementById("builderPage").classList.add("hidden");
+  document.getElementById(pageId).classList.remove("hidden");
+}
+
+/* ---------- ELEMENT SELECTION ---------- */
+
+function chooseElement(element) {
+  selectedElement = element;
+  document.getElementById("elementTitle").innerText =
+    element.toUpperCase() + " Skills";
+  renderSkills();
+  showPage("builderPage");
+}
+
+/* ---------- RENDER SKILLS ---------- */
+
+function renderSkills() {
+  const container = document.getElementById("skillsContainer");
+  container.innerHTML = "";
+
+  elements[selectedElement].skills.forEach(skill => {
     const div = document.createElement("div");
-    div.className = "skill-box";
-    div.innerHTML = `
-        <strong>${skill.name}</strong><br>
-        ${skill.element} - ${skill.role}<br>
-        <button onclick="addSkill('${skill.name}')">Add</button>
-    `;
-    skillContainer.appendChild(div);
-});
+    div.className = "skill";
+    div.innerText = skill.name + " (Cost: " + skill.cost + ")";
+    div.onclick = () => addSkill(skill);
+    div.onmouseenter = () => showSkillDetails(skill);
+    container.appendChild(div);
+  });
+}
 
-function addSkill(name) {
+/* ---------- ADD / REMOVE SKILLS ---------- */
 
-    const skill = skills.find(s => s.name === name);
+function addSkill(skill) {
+  if (selectedSkills.includes(skill)) {
+    alert("Skill already selected!");
+    return;
+  }
 
-    let extraCost = 0;
-    if (!usedElements.includes(skill.element) && usedElements.length > 0) {
-        extraCost = 1;
-    }
+  if (totalCost + skill.cost > maxPoints) {
+    alert("Not enough points!");
+    return;
+  }
 
-    const finalCost = skill.cost + extraCost;
-
-    if (getCurrentPoints() + finalCost > TOTAL_POINTS) {
-        alert("Not enough points!");
-        return;
-    }
-
-    selectedSkills.push({ ...skill, finalCost });
-
-    if (!usedElements.includes(skill.element)) {
-        usedElements.push(skill.element);
-    }
-
-    updateUI();
+  selectedSkills.push(skill);
+  totalCost += skill.cost;
+  updateSkillBar();
+  updateStats();
 }
 
 function removeSkill(index) {
-    selectedSkills.splice(index, 1);
-
-    usedElements = [...new Set(selectedSkills.map(s => s.element))];
-
-    updateUI();
+  totalCost -= selectedSkills[index].cost;
+  selectedSkills.splice(index, 1);
+  updateSkillBar();
+  updateStats();
 }
 
-function getCurrentPoints() {
-    return selectedSkills.reduce((sum, s) => sum + s.finalCost, 0);
+/* ---------- UPDATE UI ---------- */
+
+function updateSkillBar() {
+  const bar = document.getElementById("skillBar");
+  bar.innerHTML = "";
+
+  selectedSkills.forEach((skill, index) => {
+    const div = document.createElement("div");
+    div.className = "selectedSkill";
+    div.innerHTML = `
+      ${skill.name}
+      <button onclick="removeSkill(${index})">X</button>
+    `;
+    bar.appendChild(div);
+  });
+
+  document.getElementById("costDisplay").innerText =
+    "Points: " + totalCost + " / " + maxPoints;
+
+  document.getElementById("costBar").style.width =
+    (totalCost / maxPoints * 100) + "%";
 }
 
-function updateUI() {
-    updateSelectedBar();
-    updatePoints();
-    updateChart();
+function showSkillDetails(skill) {
+  document.getElementById("skillDetails").innerHTML = `
+    <strong>${skill.name}</strong><br>
+    Type: ${skill.type}<br>
+    Cost: ${skill.cost}<br>
+    Attack: ${skill.stats.attack}<br>
+    Defense: ${skill.stats.defense}<br>
+    Control: ${skill.stats.control}<br>
+    Sustain: ${skill.stats.sustain}
+  `;
 }
 
-function updateSelectedBar() {
+function updateStats() {
+  let totals = {attack:0, defense:0, control:0, sustain:0};
 
-    const bar = document.getElementById("selectedBar");
-    bar.innerHTML = "";
+  selectedSkills.forEach(skill => {
+    totals.attack += skill.stats.attack;
+    totals.defense += skill.stats.defense;
+    totals.control += skill.stats.control;
+    totals.sustain += skill.stats.sustain;
+  });
 
-    selectedSkills.forEach((skill, index) => {
-        const div = document.createElement("div");
-        div.className = "selected-skill";
-        div.innerHTML = `
-            ${skill.name} (${skill.finalCost})
-            <button onclick="removeSkill(${index})">X</button>
-        `;
-        bar.appendChild(div);
-    });
-}
+  if (radarChart) radarChart.destroy();
 
-function updatePoints() {
-
-    const current = getCurrentPoints();
-
-    document.getElementById("points").innerText =
-        current + " / " + TOTAL_POINTS;
-
-    const percent = (current / TOTAL_POINTS) * 100;
-    document.getElementById("costBar").style.width = percent + "%";
-}
-
-skillContainer.addEventListener("click", function(e) {
-    if (e.target.tagName === "BUTTON") {
-        const skillName = e.target.parentElement.querySelector("strong").innerText;
-        const skill = skills.find(s => s.name === skillName);
-
-        document.getElementById("properties").innerHTML = `
-            <strong>${skill.name}</strong><br>
-            Element: ${skill.element}<br>
-            Role: ${skill.role}<br>
-            Damage: ${skill.stats.damage}<br>
-            Control: ${skill.stats.control}<br>
-            Defense: ${skill.stats.defense}<br>
-            Mobility: ${skill.stats.mobility}<br>
-            Sustain: ${skill.stats.sustain}
-        `;
-    }
-});
-
-// Radar Chart
-const ctx = document.getElementById('radarChart').getContext('2d');
-
-const radarChart = new Chart(ctx, {
-    type: 'radar',
+  radarChart = new Chart(document.getElementById("radarChart"), {
+    type: "radar",
     data: {
-        labels: ['Damage', 'Control', 'Defense', 'Mobility', 'Sustain'],
-        datasets: [{
-            label: 'Build',
-            data: [0,0,0,0,0],
-            borderColor: 'hotpink',
-            backgroundColor: 'rgba(255,105,180,0.2)'
-        }]
+      labels: ["Attack","Defense","Control","Sustain"],
+      datasets: [{
+        label: "Build Stats",
+        data: [totals.attack, totals.defense, totals.control, totals.sustain]
+      }]
     },
     options: {
-        plugins: { legend: { display: false }},
-        scales: {
-            r: {
-                beginAtZero: true,
-                max: 25,
-                ticks: { display: false }
-            }
+      scales: {
+        r: {
+          min: 0,
+          max: 15
         }
+      }
     }
-});
-
-function updateChart() {
-
-    const totals = { damage:0, control:0, defense:0, mobility:0, sustain:0 };
-
-    selectedSkills.forEach(skill => {
-        for (let stat in totals) {
-            totals[stat] += skill.stats[stat];
-        }
-    });
-
-    radarChart.data.datasets[0].data = [
-        totals.damage,
-        totals.control,
-        totals.defense,
-        totals.mobility,
-        totals.sustain
-    ];
-
-    radarChart.update();
+  });
 }
-
 </script>
 
 </body>
